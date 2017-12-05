@@ -1,0 +1,283 @@
+This is a step-by-step guide on how to build a blogging app using Django and is on the Udemy tutorial found [here](https://www.udemy.com/try-django/learn/v4/content).
+
+### Setup (v0.1)
+We will download all our python packages that are specific to our app into a virtual environment. So  we need to install the package that gives us the ability to make a virtual environment, make, and then activate the virtual environment.
+
+```
+pip3 install virtualenv
+```
+
+Now in our the folder that we wish to create the app...
+1. Make the virtual environment
+2. Install Django
+3. Create a Django project
+
+```
+mkvirtualenv django_blog
+pip3 install django
+django-admin.py startproject django_blog
+```
+
+This will create a Django app by downloading folders to your current directory.
+The folder structure should look something like the following...
+
+![image](readme_images/1_initial_folder_structure.png)
+
+Next, we need to make a GitHub repository to store all our code. There are several ways to make a local git repository on your computer. Firstly we need to log into GitHub and create a new repository. Then clone this repository into our local folder and set the remote repository to that on GitHub so that each time we commit our local files to GitHub they go into the correct GitHub repository.
+
+My code resides in a local directory `django_blog` and in the repository [here](https://github.com/danhagg/django-blog-app) on GitHub. To achieve the linking of the two repositories we do the following in the local app folder terminal...
+
+```
+cd django_blog
+git init
+git add -A
+git commit -m "first commit"
+git remote add origin git@github.com:danhagg/django-blog-app.git
+git push -u origin master
+```
+
+So, our local and remote repositories are linked. Lets run the django app we just created from the terminal in our development server.
+
+```
+python3 manage.py runserver
+```
+
+And view the output in the browser at `http://127.0.0.1:8000/`. You should see the following...
+
+![image](readme_images/2_first_view.png)
+
+We can add these files and push them to GitHub.
+
+```
+git add -A
+git commit -m"default app"
+git push
+```
+
+Then on GitHub we can navigate to the `releases` tab. Hit `Draft new release`. Add the tag name `v0.1` and target the most recent commit we just made and publish. We will repeat this process of push files to GitHub and making a tagged release over and over.
+
+### v0.2
+
+We can now create a superuser to login to our app
+```
+python3 manage.py migrate
+python3 manage.py createsuperuser
+```
+
+If we look in our `settings.py` we have access to these installed apps:
+
+```py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+]
+```
+
+We have a pre-installed `admin` app. So, in our browser at `http://127.0.0.1:8000/admin` we can use this `app` and login with the superuser details.
+
+We can also make more `apps`. The first `app` that we will add is a `posts`. Which we can do with the following terminal command.
+
+```
+python3 manage.py startapp posts
+```
+
+Which installs a new folder in our app called `posts`.
+
+![image](readme_images/3_create_posts.png)
+
+1. migrations
+2.  \__init__.py (empty, makes the `posts` folder a module)
+3. admin.py (ties the module to admin)
+4. apps.py (allows us to configure the `posts` module. We will not touch it.)
+4. models.py (how we will map our data to database)
+5. tests.py (design tests for automated testing)
+6. views.py (showing us how something is displayed inside an app)
+
+We are using an `MVC` which is a `Model, View, Controller`.
+
+`MVC` is a software architectural design pattern which allows one to organize ones program to separate functionality within our application. There is no strict way to do `MVC` programming but in general we can break up most of our application functionality into separate files along the following lines.
+
+1. Model
+  - Data related logic
+  - Database interactions
+  - Communicates with `controller`. The `controller` can request data through the `model`.
+2. View
+  - Actual `view` of application. The `UI`. `HTML` and `CSS` and `template engines` that allow for dynamic data from `controller`.
+  - Communicates with `controller`.
+3. Controller
+  - Takes in user input.
+  - Deals with requests.
+  - Retrieves data from `model` and channels to the `view`.
+
+Although Django does broadly follow the `MVC` paradigm it does have some differences as shown in the diagram below.
+
+![image](readme_images/4_django_request_response_cycle.png)
+
+The `controller` is mainly carried out by the framework itself and most of the action occurs in `Models`, `Templates` and `Views` and so Django is often referred to as `MTV`.
+1. Models
+2. Templates (In `MVC`: `view`-like)
+  - The presentation layer
+3. Views (In `MVC`: `controller`-like)
+  - The business logic layer. Acts as the middle man between `model` and `template`.
+
+We shall employ the use of a `model` to associate with what we want in the database. We can add various `fields` to our `models` and they are described in the Django documentation [here](https://docs.djangoproject.com/en/1.11/ref/models/fields/).
+
+In `models.py`:
+```py
+from django.db import models
+
+
+# Create your models here.
+class Post(models.Model):
+    title = models.CharField(max_length=120)
+    content = models.TextField()
+    updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+```
+
+We need to add the model to our application using `settings.py`.
+
+```py
+# simply add the name of our module 'posts'
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'posts'
+]
+```
+Then we can run the following command in the terminal.
+```
+python3 manage.py migrate
+```
+We get the following error... :-1:
+
+`Your models have changes that are not yet reflected in a migration, and so won't be applied. Run 'manage.py makemigrations' to make new migrations, and then re-run 'manage.py migrate' to apply them.`
+
+What this implies is that something in our `models` has changed. Namely the changes we added to `post/models.py`. Django has recognized this and told us that we need to migrate these changes to our database as the database and django project are not in sync.
+
+Thus, we run...
+
+```
+python3 manage.py makemigrations
+```
+
+This command yields the following:
+
+```
+Migrations for 'posts':
+  posts/migrations/0001_initial.py
+    - Create model Post
+```
+
+That `0001_initial.py` file tells us what the changes were but it does not yet apply them to the database. To make those changes we run the following to put our `post model` in the database:
+
+```
+python3 manage.py migrate
+```
+
+Now we shall try and add this to the `admin.py`
+
+```py
+from django.contrib import admin
+
+# relative import as admin & models both in in same folder Posts
+from .models import Post
+
+# built-in admin function that registers post model into admin site
+admin.site.register(Post)
+```
+
+We now see the following in our `http://127.0.0.1:8000/admin`.
+
+![image](readme_images/5_model_posts.png)
+
+We can even click on posts and select to add to them if we so wish.
+
+We shall push to GitHub and `tag` this new release. In the local `git` repository.
+
+```
+git add -A
+git commit -m"added post functionality"
+git push
+```
+
+Then on GitHub we can navigate to the `releases` tab. Hit `Draft new release`. Add the tag name `v0.2` and target the most recent commit we just made and publish.
+
+### v0.3
+Create a model admin. Documentation [here](https://docs.djangoproject.com/en/2.0/ref/contrib/admin/#modeladmin-options).
+
+In `posts/admin.py`:
+```py
+from django.contrib import admin
+
+from .models import Post
+
+
+# ModelAdmin refers to Post model
+# Need to set the Model itself
+# we can play with the admin options here and check them in localhost:8000/admin
+class PostModelAdmin(admin.ModelAdmin):
+    list_display = ['title', 'updated', 'timestamp']
+    list_display_links = ['updated']
+    list_editable = ['title']
+    list_filter = ['updated', 'timestamp']
+    search_fields = ['title', 'content']
+
+    class Meta:
+        model = Post
+
+
+# Bring it in to admin.site.register
+# We have now connected Post model with PostModelAdmin
+admin.site.register(Post, PostModelAdmin)
+```
+Our blog amin page Is now endowed with the variables defined in our PostModelAdmin class.
+
+![image](readme_images/6_posts_admin.png)
+
+##### CRUD (Create, Retrieve, Update, Destroy)
+CRUD is how our app works with the database. We create a crud.md file.
+```
+CREATE -- POST
+RETRIEVE -- GET -- List / Search
+UPDATE -- PUT/PATCH -- Edit
+DELETE --  DELETE -- Delete
+```
+The admin built-n with Django performs CRUD extremely well. Note that the CRUD acronym mirrors HTTP methods. And SQL (INSERT, SELECT, UPDATE, DELETE). To handle all these methods we use views.
+1. CREATE view
+2. RETRIEVE view
+3. UPDATE view
+4. DELETE view
+
+Now we can write our first view to display HTML as we want it to be displayed. So, we have stuff in `posts` table lets see if we can view it by modifying the `posts/view.py`. We will make `function-based views` not `class-based views`.
+
+`posts/views.py`
+```py
+
+```
+We need to map a `url` to the `view`. To send the request to where it needs to go.
+
+`urls.py`
+```py
+from django.contrib import admin
+from django.urls import path
+from posts.views import post_home
+
+# https://stackoverflow.com/questions/38744285/django-urls-error-view-must-be-a-callable-or-a-list-tuple-in-the-case-of-includ
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('posts/', post_home, name='post_home'),
+]
+```
