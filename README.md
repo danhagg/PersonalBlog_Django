@@ -128,18 +128,20 @@ We shall employ the use of a `model` to associate with what we want in the datab
 
 In `models.py`:
 ```py
+from __future__ import unicode_literals
+
 from django.db import models
 
 
-# Create your models here.
 class Post(models.Model):
-    title = models.CharField(max_length=120)
+    title = models.CharField(max_lebgth=120)
     content = models.TextField()
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
-    def __str__(self):
-        return self.title
+
+def __str__(self):
+    return self.title
 ```
 
 We need to add the model to our application using `settings.py`.
@@ -242,7 +244,7 @@ class PostModelAdmin(admin.ModelAdmin):
 # We have now connected Post model with PostModelAdmin
 admin.site.register(Post, PostModelAdmin)
 ```
-Our blog amin page Is now endowed with the variables defined in our PostModelAdmin class.
+Our blog admin page Is now endowed with the variables defined in our PostModelAdmin class.
 
 ![image](readme_images/6_posts_admin.png)
 
@@ -264,20 +266,24 @@ Now we can write our first view to display HTML as we want it to be displayed. S
 
 `posts/views.py`
 ```py
+from django.http import HttpResponse
+from django.shortcuts import render
 
+
+# Create your views here.
+def posts_home(request):
+    return HttpResponse('<h1>Hello</h1>')
 ```
 We need to map a `url` to the `view`. To send the request to where it needs to go.
 
 `urls.py`
 ```py
+from django.conf.urls import url
 from django.contrib import admin
-from django.urls import path
-from posts.views import post_home
 
-# https://stackoverflow.com/questions/38744285/django-urls-error-view-must-be-a-callable-or-a-list-tuple-in-the-case-of-includ
-
+# takes the <app name>.views.<function_name>
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('posts/', post_home, name='post_home'),
+    url(r'^admin/', admin.site.urls),
+    url(r'^posts/$', 'posts.views.post_home')
 ]
 ```
