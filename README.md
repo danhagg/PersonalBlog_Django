@@ -1,4 +1,4 @@
-This is a step-by-step guide on how to build a blogging app using Django and is on the Udemy tutorial found [here](https://www.udemy.com/try-django/learn/v4/content).
+This is a step-by-step guide on how I built my blogging application found [here](https://porkpy.com/). Built with Django and based upon the Udemy tutorial found [here](https://www.udemy.com/try-django/learn/v4/content).
 
 ### Setup (v0.1)
 We will download all our python packages that are specific to our app into a virtual environment. So  we need to install the package that gives us the ability to make a virtual environment, make, and then activate the virtual environment.
@@ -471,5 +471,99 @@ Finally, our `index.html` file renders with the title argument sent to it by the
 ```html
 <body>
   <h1>{{ title }} is working</h1>
+</body>
+```
+
+### Query Sets
+First use python shell then bring into `view`.
+
+```
+python3 manage.py shell
+```
+
+To use any `model` in an app we need to import it. Needs to be a full path import in shell.
+
+In python shell we can query the database in the following manner:
+
+```py
+(InteractiveConsole)
+>>> from posts.models import Post
+>>> Post.objects.all()
+[<Post: post 1>, <Post: post 2>]
+>>> Post.objects.create(title="New Post", content="New content")
+<Post: New Post>
+>>> Post.objects.all()
+[<Post: post 1>, <Post: post 2>, <Post: New Post>]
+>>> queryset = Post.objects.all()
+>>> for obj in queryset:
+...     print(obj.title, obj.id, obj.pk)
+...
+post 1 1 1
+post 2 2 2
+New Post 3 3
+```
+
+Given that this is how it's done in the shell we can now perform the same querying in our `views.py`.
+
+```py
+from .models import Post
+
+...
+
+def post_list(request):  # list items
+    queryset = Post.objects.all()
+    context = {"object_list": queryset, "title": "List"}
+    return render(request, 'index.html', context)
+```
+
+In `index.html`.
+
+```html
+<body>
+  <h1>{{ title }} is working</h1>
+
+{% for obj in object_list %}
+
+{{ obj.title }}<br/>
+{{ obj.content }}<br/>
+{{ obj.timestamp }}<br/>
+{{ obj.updated }}<br/>
+{{ obj.id }}<br/>
+
+{% endfor %}
+
+</body>
+```
+
+Gives...
+
+![image](readme_images/11_posts_details.png)
+
+### Make individual posts
+In `views.py`
+
+```py
+from django.shortcuts import render, get_object_or_404
+
+...
+# Add get_object_or_404 and the link to 'post_detail.html'
+ddef post_detail(request):  # RETRIEVE
+    instance = get_object_or_404(Post, id=1)
+    context = {"title": instance.title, "instance": instance}
+    return render(request, 'post_detail.html', context)
+```
+
+Make a new `html` for detail `templates/index.html`.
+
+```html
+<body>
+  <h1>{{ title }}</h1>
+
+{{ instance.title }}<br/>
+{{ instance.content }}<br/>
+{{ instance.timestamp }}<br/>
+{{ instance.updated }}<br/>
+{{ instance.id }}<br/>
+
 </body>
 ```

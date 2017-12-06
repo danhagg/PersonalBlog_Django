@@ -1,11 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
-# We will factor in functions for each CRUD component
-# CREATE -- POST
-# RETRIEVE -- GET -- List / Search
-# UPDATE PUT/PATCH -- Edit
-# DELETE --  DELETE -- Delete
+from .models import Post
 
 
 def post_create(request):  # CREATE
@@ -13,12 +9,14 @@ def post_create(request):  # CREATE
 
 
 def post_detail(request):  # RETRIEVE
-    context = {"title": "Detail"}
-    return render(request, 'index.html', context)
+    instance = get_object_or_404(Post, id=1)
+    context = {"title": "Detail", "instance": instance}
+    return render(request, 'post_detail.html', context)
 
 
 def post_list(request):  # list items
-    context = {"title": "List"}
+    queryset = Post.objects.all()
+    context = {"object_list": queryset, "title": "List"}
     return render(request, 'index.html', context)
 
 
