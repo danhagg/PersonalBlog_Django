@@ -287,3 +287,189 @@ urlpatterns = [
     url(r'^posts/$', 'posts.views.post_home')
 ]
 ```
+
+Now going to make views and urls combined into the posts app. We make a `posts/urls.py` file:
+
+```py
+from django.conf.urls import url
+from django.contrib import admin
+
+# takes the <app name>.views.<function_name>
+urlpatterns = [url(r'^$', 'posts.views.post_home')]
+```
+
+```py
+from django.conf.urls import include, url
+from django.contrib import admin
+
+# modify to include all posts.urls to the posts/ url
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^posts/', include('posts.urls'))
+]
+```
+
+Now our `posts` `views` are being delivered through the `posts/urls.py` file.
+
+Now, back in our view `post/views.py` we need to work on our `CRUD` methodology.
+
+```py
+from django.http import HttpResponse
+from django.shortcuts import render
+
+# We will factor in functions for each CRUD component
+# CREATE -- POST
+# RETRIEVE -- GET -- List / Search
+# UPDATE PUT/PATCH -- Edit
+# DELETE --  DELETE -- Delete
+
+
+def post_create(request):  # CREATE
+    return HttpResponse('<h1>Create</h1>')
+
+
+def post_detail(request):  # RETRIEVE
+    return HttpResponse('<h1>Detail</h1>')
+
+
+def post_list(request):  # list items
+    return HttpResponse('<h1>List</h1>')
+
+
+def post_update(request):  # UPDATE
+    return HttpResponse('<h1>Update</h1>')
+
+
+def post_delete(request):  # DELETE
+    return HttpResponse('<h1>Delete</h1>')
+```
+
+We can now put these functions into our `posts/urls.py`.
+
+```py
+from django.conf.urls import url
+from django.contrib import admin
+
+# will port only from posts/views
+from .views import (
+    post_list,
+    post_create,
+    post_detail,
+    post_update,
+    post_delete,
+)
+
+# we can make our urls linked to view functions
+# lists is simply going to be the default posts url
+urlpatterns = [
+    url(r'^$', post_list),
+    url(r'^create/$', post_create),
+    url(r'^detail/$', post_detail),
+    url(r'^update/$', post_update),
+    url(r'^delete/$', post_delete),
+]
+```
+
+Now if we go to our default `posts` url we should see the `post_list` function in our `views.py` displayed... Well, is that what we see?
+
+![image](readme_images/7_posts_urls.png)
+
+Now lets add some templates keeps our Django code nice and clean and keeps the front-end as separate as possible from the backend.
+
+In `settings.py` it is worth noting the following line of code
+
+```py
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+```
+
+The use of `os` here line assigns the location of our `manage.py` file to the variable `BASE_DIR`. We shall use the same `os` method to point to our templates. So, in same `settings.py` file, we apply the BASE_DIR to 'DIRS'.
+
+```py
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+We also need to make a folder to hold all our html and templating codin. Lets make a new folder and file thusly: `src/templates/index.html`.
+
+```html
+<!--DOCTYPE html -->
+<html>
+<body>
+  <h1>Template is working</h1>
+</body>
+
+</html>
+```
+
+In `views.py` we change-up our `post_list` function to render the `html` we just coded. We will look at the empty dictionary `{}` in the following section
+```py
+def post_list(request):  # list items
+    return render(request, 'index.html', {})
+```
+
+![image](readme_images/8_first_html.png)
+
+##### Using Template contexts
+`Context` (fin the case of unction-based views) or `context-data` (class-based views) are often used as variable names for dictionaries in templates. These names are optional.
+
+If we slightly modify two of the functions in `posts/views.py` to
+1. define a context dictionary variable
+2. return a rendering of the `index.html` and the dictionary
+
+We also need to modify the `index.html` file to accept the context variables.
+```html
+<!--DOCTYPE html -->
+<html>
+<body>
+  <h1>{{ title }} is working</h1>
+</body>
+
+</html>
+```
+So now at `http://127.0.0.1:8000/posts/`
+
+![image](readme_images/9_posts.png)
+
+Whereas at `http://127.0.0.1:8000/posts/detail/` we get...
+
+![image](readme_images/10_detail.png)
+
+Let's use the `details` we page to workout the chain of events here:
+
+1. In the `posts/views.py` file we have our `post_detail` function that takes in a `request`, defines a `context` with a key value pair of `'title: 'detail'`.
+
+```py
+def post_detail(request):  # RETRIEVE
+    context = {"title": "Detail"}
+    return render(request, 'index.html', context)
+```
+
+2. In the `posts/urls.py` file we have a `url pattern` that accepts the `post_detail` function as an argument and assigns it to any url ending with `'detail/'`.
+
+```py
+urlpatterns = [
+    ...
+    url(r'^detail/$', post_detail)
+    ...
+    ]
+```
+
+Finally, our `index.html` file renders with the title argument sent to it by the `post_detail` function.
+
+```html
+<body>
+  <h1>{{ title }} is working</h1>
+</body>
+```
