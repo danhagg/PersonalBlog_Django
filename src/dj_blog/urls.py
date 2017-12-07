@@ -20,5 +20,5 @@ from django.contrib import admin
 # modify to include all posts.urls to the posts/ url
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^posts/', include('posts.urls'))
+    url(r'^posts/', include('posts.urls', namespace='posts'))
 ]

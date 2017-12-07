@@ -567,3 +567,77 @@ Make a new `html` for detail `templates/index.html`.
 
 </body>
 ```
+
+### Dynamic url routing
+Our url is going to correlate to our query of the database.
+
+Thus, when we look for post number two we wish the url to update to `post 2` and grab `post 2` from the database.
+So, we add to the `urlpatterns` in `urls.py` to take in the post `id`. We will also remove the word detail as we don't want it to appear in our url browser bar.
+
+```py
+urlpatterns = [
+...
+    url(r'^(?P<id>\d+)/$', post_detail),
+    ...
+]
+```
+The `url` is now taking in a keyword `id`. The url pattern also only takes in digits. That digit is then assigned to a keyword `id`. That keyword argument is passed into the view as a parameter to the `post_detail` method in `views.py`. The `id` is then part of the look-up query as we add `id=id` to the `GET` call.
+
+```py
+def post_detail(request, id):
+  instance = get_object_or_404(Post, id=id)
+
+```
+We can now switch out the numbers after `posts/` here `http://127.0.0.1:8000/posts/1/` to show different posts.
+
+![image](readme_images/12_post_details.png)
+
+### Adding url links using named urls
+In `models.py`:
+
+```py
+def get_absolute_url(self):
+    return reverse("posts:detail", kwargs={"id": self.id})
+```
+
+
+In `posts/urls.py`:
+```py
+urlpatterns = [
+...
+    url(r'^(?P<id>\d+)/$', post_detail, name='detail'),
+...
+    ]
+```
+
+In `index.html`:
+
+```html
+<body>
+  <h1>{{ title }} is working</h1>
+
+{% for obj in object_list %}
+/posts/id/
+{% url "posts:detail" id=obj.id %}
+
+<a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a><br/>
+{{ obj.content }}<br/>
+{{ obj.timestamp }}<br/>
+{{ obj.updated }}<br/>
+{{ obj.id }}<br/>
+
+{% endfor %}
+
+</body>
+```
+
+In `urls.py`: `namespaces` are only applied when you use a set or urls. They group together `posts`. This allows the url with an id of '5' for example to exist in a `posts` namespace then also, perhaps in an `authors` namespace should we add that later.
+
+```py
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
+    url(r'^posts/', include('posts.urls', namespace='posts'))
+]
+```
+
+This was pushed to GitHub and tagged as
