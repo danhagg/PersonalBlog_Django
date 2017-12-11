@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import Post
+from markdownx.admin import MarkdownxModelAdmin
 
 
 # ModelAdmin refers to Post model
@@ -19,4 +20,4 @@ class PostModelAdmin(admin.ModelAdmin):
 
 # Bring it in to admin.site.register
 # We have now connected Post model with PostModelAdmin
-admin.site.register(Post, PostModelAdmin)
+admin.site.register(Post, MarkdownxModelAdmin)

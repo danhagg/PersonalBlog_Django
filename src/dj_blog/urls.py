@@ -19,10 +19,14 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 
+from django.conf.urls import url, include
+from markdownx import urls as markdownx
+
 # modify to include all posts.urls to the posts/ url
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^posts/', include('posts.urls', namespace='posts'))
+    url(r'^posts/', include('posts.urls', namespace='posts')),
+    url(r'^markdownx/', include(markdownx)),
 ]
 
 if settings.DEBUG:

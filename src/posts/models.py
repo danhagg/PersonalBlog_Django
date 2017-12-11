@@ -7,11 +7,7 @@ from django.utils import timezone
 
 from django.utils.text import slugify
 
-# from markdownx.models import MarkdownxField
-#
-#
-# class MyModel(models.Model):
-#     myfield = MarkdownxField()
+from markdownx.models import MarkdownxField
 
 
 # overwrite default all
@@ -28,6 +24,7 @@ def upload_location(instance, filename):
 
 
 class Post(models.Model):
+    myfield = MarkdownxField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
