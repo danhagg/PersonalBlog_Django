@@ -7,6 +7,12 @@ from django.utils import timezone
 
 from django.utils.text import slugify
 
+# from markdownx.models import MarkdownxField
+#
+#
+# class MyModel(models.Model):
+#     myfield = MarkdownxField()
+
 
 # overwrite default all
 class PostManager(models.Manager):

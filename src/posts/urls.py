@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf.urls import include
 
 # will port only from posts/views
 from .views import (
@@ -18,4 +19,5 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/$', post_detail, name='detail'),
     url(r'^(?P<slug>[\w-]+)/edit/$', post_update, name='update'),
     url(r'^(?P<slug>[\w-]+)/delete/$', post_delete),
+    url(r'^markdownx/', include('markdownx.urls')),
 ]

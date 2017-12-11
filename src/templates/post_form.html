@@ -11,5 +11,13 @@
 {{ form.as_p }}
 <input type='submit' class='btn btn-default' value='Create Post' />
 </form>
+
+{{ form.media }}
 </div>
 {% endblock content %}
+
+<!-- <form method="POST" action="">{% csrf_token %}
+    {{ form }}
+</form>
+
+{{ form.media }} -->
