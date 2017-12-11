@@ -24,7 +24,7 @@ def upload_location(instance, filename):
 
 
 class Post(models.Model):
-    myfield = MarkdownxField()
+    #myfield = MarkdownxField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, default=1)
     title = models.CharField(max_length=120)
     slug = models.SlugField(unique=True)
@@ -36,7 +36,8 @@ class Post(models.Model):
         width_field="width_field")
     height_field = models.IntegerField(default=0)
     width_field = models.IntegerField(default=0)
-    content = models.TextField()
+    content = MarkdownxField()
+    #content = models.TextField()
     draft = models.BooleanField(default=False)
     publish = models.DateField(auto_now=False, auto_now_add=False)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)

@@ -11,7 +11,7 @@ from markdownx.fields import MarkdownxFormField
 
 class PostForm(forms.ModelForm):
     publish = forms.DateField(widget=forms.SelectDateWidget)
-    myfield = MarkdownxFormField()
+    content = MarkdownxFormField()
 
     class Meta:
         model = Post
