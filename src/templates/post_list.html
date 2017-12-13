@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
+
 {% block content %}
+
+
 
 <div class='col-sm-6 col-sm-offset-3'>
   <h1>{{ title }}</h1>
@@ -21,11 +24,13 @@
       {% endif %}
       <div class="caption">
         {% if obj.draft %}<h3>Draft </h3>{% endif %}{% if obj.publish > today %}<h3>Future Post {% endif %}</h3>
-        <h3>  <a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a><small> {{ obj.publish }}</small></h3>
+        <h3>  <a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a>
+          <br /><small> {{ obj.publish }}</small></h3>
         {% if instance.user.get_full_name %}
         <p>
           Author: {{ instance.user.get_full_name}}
         </p>
+
         {% endif %}
         <p class='content-markdown'>{{ obj.content|truncatechars:120 }}</p>
         <p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a></p>
@@ -53,4 +58,5 @@
 </div>
 
 </div>
+
 {% endblock content %}

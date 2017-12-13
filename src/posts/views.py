@@ -66,7 +66,7 @@ def post_list(request):  # list items
 
     context = {
         "object_list": queryset,
-        "title": "List",
+        "title": "Posts",
         "page_request_var": page_request_var,
         "today": today,
     }

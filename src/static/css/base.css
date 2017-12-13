@@ -2,6 +2,15 @@ h1 {
   color: gray;
 }
 
+h3 {
+  color: gray;
+  line-height: 1.3;
+}
+
+.col-sm-6 {
+  padding-top: 55px;
+}
+
 .wmd-panel {
   margin-right: 0px !important;
   margin-left: 0px !important;
