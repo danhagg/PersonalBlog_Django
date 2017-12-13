@@ -72,11 +72,6 @@ def create_slug(instance, new_slug=None):
 def pre_save_post_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = create_slug(instance)
-    # slug = slugify(instance.title)
-    # exists = Post.objects.filter(slug=slug).exists()
-    # if exists:
-    #     slug = "%s-%s" % (slugify(instance.title), instance.id)
-    #     instance.slug = slug
 
 
 pre_save.connect(pre_save_post_receiver, sender=Post)
