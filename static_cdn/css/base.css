@@ -8,7 +8,7 @@ h3 {
 }
 
 .col-sm-6 {
-  padding-top: 55px;
+  padding-top: 55px !important;
 }
 
 .wmd-panel {
