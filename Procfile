@@ -1,1 +1,1 @@
-web: cd src && gunicorn dj_blog.wsgi --log-file -
+web: gunicorn dj_blog.wsgi --chdir src --log-file -
